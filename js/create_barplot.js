@@ -1,13 +1,20 @@
 //D3 code for baseball Visualization
 
 // Defining margins as in  http://bl.ocks.org/mbostock/3019563
+var margin = {top: 20, right: 10, bottom:20, left:100};
 
-function draw(data){
-  var margin = {top: 20, right: 10, bottom:20, left:100};
+var width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
 
-  var width = 960 - margin.left - margin.right,
-      height = 500 - margin.top - margin.bottom;
+    // Main svg
+    var chart = d3.select("body").append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height+margin.top+margin.bottom)
+          .attr("class", "barplot")
+        .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+function draw_bar_plot(data){
 //Sumarise count per handedness
   var count_handedness = d3.nest()
         .key(function(d){
@@ -21,6 +28,7 @@ function draw(data){
           .domain(["R", "L", "B"])
           .rangeBands([0, width], 0.1);
 
+
   var y = d3.scale.linear()
             .domain([0, d3.max(count_handedness, function(d) {return d.values.count;})])
             .range([height, 0]);
@@ -29,20 +37,18 @@ function draw(data){
                 .domain([0, 100])
                 .range([height, 0]);
 
-  // Main svg
-  var chart = d3.select("body").append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height+margin.top+margin.bottom)
-        .attr("class", "chart")
-      .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
 
   //Add axis
   var hand_axis = d3.svg.axis()
     .scale(x)
-    .orient("bottom");
-    //.ticks(["R", "L", "B"])
-    //.tickValues(["A", "B", "C"]);
+    .orient("bottom")
+    .tickFormat(function(value){//replace RLB with longer labels
+      new_labels = {"R": "Right-handed Players",
+                    "L": "Left-handed Players",
+                    "B": "Ambidextrous Players"};
+      return new_labels[value];
+    });
 
   var count_axis = d3.svg.axis()
     .scale(y)
@@ -75,7 +81,8 @@ function draw(data){
   var button_pct = d3.select("body")
                 .append("button")
                 .attr("type", "button")
-                .text("Switch to Percentage");
+                .text("Switch to Percentage")
+                .style("display", "block");
 
   function change_bars(what_to_show){
     //Changes the bars from count to percentage and vice versa
@@ -114,16 +121,3 @@ button_pct.on("click", function(){
     change_bars("count");
   }});
 }//end of draw function
-
-
-d3.csv("data/baseball_data.csv", function(d){
-// + sign before variable, converts to number
-  return{
-    "name": d.name,
-    "handedness": d.handedness,
-    "height": +d.height,
-    "weight": +d.weight,
-    "avg": +d.avg,
-    "HR": +d.HR
-  };
-},draw);

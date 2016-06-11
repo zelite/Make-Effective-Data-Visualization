@@ -9,6 +9,26 @@
 </head>
 <body>
   <h1>Baseball data visualization</h1>
-  <script src="js/create_visualization.js"></script>
+
+  <script src="js/create_barplot.js"></script>
+  <script src="js/box.js"></script>
+  <script src="js/create_boxplot.js"></script>
+  <script>
+  d3.csv("data/baseball_data.csv", function(d){
+  // + sign before variable, converts to number
+    return{
+      "name": d.name,
+      "handedness": d.handedness,
+      "height": +d.height,
+      "weight": +d.weight,
+      "avg": +d.avg,
+      "HR": +d.HR
+    };
+  },function(data){
+    draw_bar_plot(data);
+    draw_box_plot(data, "avg");
+    draw_box_plot(data, "HR");
+  });
+  </script>
 </body>
 </html>
