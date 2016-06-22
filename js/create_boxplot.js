@@ -1,60 +1,159 @@
-// Used https://bl.ocks.org/mbostock/4061502 for guidance
-function iqr(k) {
-  //function from https://bl.ocks.org/mbostock/4061502
-  //returns function that calculates interquartile range.
-  return function(d, i) {
-    var q1 = d.quartiles[0],
-        q3 = d.quartiles[2],
-        iqr = (q3 - q1) * k,
-        i = -1,
-        j = d.length;
-    while (d[++i] < q1 - iqr);
-    while (d[--j] > q3 + iqr);
-    return [i, j];
-  };
-}
-
 function draw_box_plot(data, v_name){
-  /*var boxPlot = d3.select("body").append("svg")
+  data = data.sort(function(a, b){
+    return a[v_name] - b[v_name];
+  });
+
+  var chart = d3.select("body").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height+margin.top+margin.bottom)
-        .attr("class", "boxplot")
+        .attr("class", "boxplot "+v_name)
       .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");*/
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var margin = {top: 20, right: 30, bottom:20, left:30};
+  var byHand = d3.nest()
+    .key(function(d){
+      return d.handedness;
+    })
+    .entries(data);
 
-var width = 120 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+  /* d3.quantile does not work with an acessor function
+  therefore the values need to be extracted to an array and
+  sorted beforehand*/
 
-  var min = d3.min(data, function(d) {return d[v_name];}),
-      max = d3.max(data, function(d) {return d[v_name];});
-  //debugger;
+  function topWhisker(q1, q3, v_array){
+    var whisker = q3 + 1.5*(q3-q1);
+    var notOutliers = v_array.filter(function(d){
+      return d <= whisker;
+    });
+    return Math.min(whisker, d3.max(notOutliers));
+  }
 
-  //Preparing the data to be used by the box plugin
-  var var_data = [[], [], []];
-  data.forEach(function(x){
-    var v = x[v_name];
-    var hand = x.handedness;
-    var hands = {"R": 0, "L": 1, "B": 2};
-    var_data[hands[hand]].push(v);
+  function bottomWhisker(q1, q3, v_array){
+    var whisker = q1 - 1.5*(q3-q1);
+    var notOutliers = v_array.filter(function(d){
+      return d >= whisker;
+    });
+    return Math.max(whisker, d3.min(notOutliers));
+  }
+
+  var summaries = d3.nest()
+      .key(function(d){
+        return d.handedness;
+      })
+    .rollup(function(leaves){
+      var v_array = leaves.map(function(d){return d[v_name];});
+      var summary = {"min": d3.min(v_array),
+              "q1": d3.quantile(v_array, 0.25),
+              "median": d3.median(v_array),
+              "q3": d3.quantile(v_array, 0.75),
+              "max": d3.max(v_array)
+            };
+      summary.topWhisker = topWhisker(summary.q1, summary.q3, v_array);
+      summary.bottomWhisker = bottomWhisker(summary.q1, summary.q3, v_array);
+      return summary;
+      })
+    .entries(data);
+
+  var x = d3.scale.ordinal()
+          .domain(["R", "L", "B"])
+          .rangeBands([0, width], 0.1);
+
+  var y = d3.scale.linear()
+            .domain([0, d3.max(summaries, function(d) {return d.values.max;})])
+            .range([height, 0]);
+
+  //Add axis
+  var hand_axis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom")
+    .tickFormat(function(value){//replace RLB with longer labels
+      new_labels = {"R": "Right-handed Players",
+                    "L": "Left-handed Players",
+                    "B": "Ambidextrous Players"};
+      return new_labels[value];
+    });
+
+  var count_axis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+
+  chart.append("g")
+    .attr("class", "hand axis")
+    .attr("transform", "translate(0,"+ height+")")
+    .call(hand_axis);
+
+  chart.append("g")
+    .attr("class", "count axis")
+    .call(count_axis);
+
+  //draw boxes  - very similar
+  //to boxplot, just the y and height are different.
+  var box = chart.selectAll(".box")
+      .data(summaries)
+    .enter().append("rect")
+    //put the boxes on the x axis
+      .attr("class", "box")
+      .attr("x", function(d){return x(d.key);})
+      .attr("width", x.rangeBand())
+      .attr("y", function(d){return y(d.values.q3);})
+      .attr("height", function(d){return y(d.values.q1)-y(d.values.q3);});
+
+  //draw median line
+  var medianLine = chart.selectAll(".median")
+      .data(summaries)
+    .enter().append("line")
+      .attr("class", "median")
+      .attr("x1", function(d){return x(d.key);})
+      .attr("x2", function(d){return x(d.key)+x.rangeBand();})
+      .attr("y1", function(d){return y(d.values.median);})
+      .attr("y2", function(d){return y(d.values.median);})
+      .style("stroke", "red");
+
+
+
+  //Draw Whiskers
+
+  function whiskerLines(q, side){
+    return chart.selectAll("."+side+".whisker")
+        .data(summaries)
+      .enter().append("line")
+        .attr("class", side+" whisker")
+        .attr({
+          x1: function(d) {return x(d.key)+x.rangeBand()/2;},
+          x2: function(d) {return x(d.key)+x.rangeBand()/2;},
+          y1: function(d) {return y(d.values[q]);},
+          y2: function(d) {return y(d.values[side+"Whisker"]);}
+        });
+  }
+
+  var topWhiskers = whiskerLines("q1", "bottom").style("stroke", "black");
+  var bottomWhiskers = whiskerLines("q3", "top").style("stroke", "black");
+
+  //Select Outliers
+
+  var mapping = {};
+  // mapping connects the handedness to the index of the summaries array
+  summaries.forEach(function(hand, index){
+    mapping[hand.key] = index;
   });
-  console.log(var_data);
 
-  var boxplot = d3.box()
-    .whiskers(iqr(1.5))
-    .width(width)
-    .height(height);
+  var outliers = data.filter(function(player){
+      return player[v_name] > summaries[mapping[player.handedness]].values.topWhisker ||
+             player[v_name] < summaries[mapping[player.handedness]].values.bottomWhisker;
+    });
 
-  boxplot.domain([min, max]);
 
-  var svg = d3.select("body").selectAll("svg .box"+" ."+v_name)
-      .data(var_data)
-    .enter().append("svg")
-      .attr("class", "box"+" "+v_name)
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.bottom + margin.top)
-    .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top+")")
-      .call(boxplot);
+
+//Draw outliers
+var circles = chart.selectAll("circle.outlier")
+    .data(outliers)
+  .enter().append("circle")
+    .attr("class", "outlier")
+    .attr({
+      cx: function(d) {return x(d.handedness)+x.rangeBand()/2;},
+      cy: function(d) {return y(d[v_name]);},
+      r: 2
+    });
+
+
 }
