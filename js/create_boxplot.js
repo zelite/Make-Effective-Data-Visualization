@@ -19,10 +19,27 @@ function draw_box_plot(data, v_name){
   /* d3.quantile does not work with an acessor function
   therefore the values need to be extracted to an array and
   sorted beforehand*/
+
+  function topWhisker(q1, q3, v_array){
+    var whisker = q3 + 1.5*(q3-q1);
+    var notOutliers = v_array.filter(function(d){
+      return d <= whisker;
+    });
+    return Math.min(whisker, d3.max(notOutliers));
+  }
+
+  function bottomWhisker(q1, q3, v_array){
+    var whisker = q1 - 1.5*(q3-q1);
+    var notOutliers = v_array.filter(function(d){
+      return d >= whisker;
+    });
+    return Math.max(whisker, d3.min(notOutliers));
+  }
+
   var summaries = d3.nest()
-    .key(function(d){
-      return d.handedness;
-    })
+      .key(function(d){
+        return d.handedness;
+      })
     .rollup(function(leaves){
       var v_array = leaves.map(function(d){return d[v_name];});
       var summary = {"min": d3.min(v_array),
@@ -31,9 +48,8 @@ function draw_box_plot(data, v_name){
               "q3": d3.quantile(v_array, 0.75),
               "max": d3.max(v_array)
             };
-      summary.iqr = summary.q3 - summary.q1;
-      summary.topWhisker = summary.q3 + 1.5*summary.iqr;
-      summary.bottomWhisker = summary.q1 - 1.5*summary.iqr;
+      summary.topWhisker = topWhisker(summary.q1, summary.q3, v_array);
+      summary.bottomWhisker = bottomWhisker(summary.q1, summary.q3, v_array);
       return summary;
       })
     .entries(data);
@@ -95,6 +111,13 @@ function draw_box_plot(data, v_name){
 
   //Select Outliers
   //
+  var outliers = byHand.map(function(hand, index){
+    hand.values = hand.values.filter(function(d){
+      return d[v_name] >= summaries[index].values.topWhisker ||
+             d[v_name] <= summaries[index].values.bottomWhisker;
+    });
+    return hand;
+  });
 
 
 
