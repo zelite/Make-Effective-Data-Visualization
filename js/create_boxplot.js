@@ -99,7 +99,7 @@ function draw_box_plot(data, v_name){
       .attr("height", function(d){return y(d.values.q1)-y(d.values.q3);});
 
   //draw median line
-  var line = chart.selectAll(".median")
+  var medianLine = chart.selectAll(".median")
       .data(summaries)
     .enter().append("line")
       .attr("class", "median")
@@ -109,18 +109,51 @@ function draw_box_plot(data, v_name){
       .attr("y2", function(d){return y(d.values.median);})
       .style("stroke", "red");
 
+
+
+  //Draw Whiskers
+
+  function whiskerLines(q, side){
+    return chart.selectAll("."+side+".whisker")
+        .data(summaries)
+      .enter().append("line")
+        .attr("class", side+" whisker")
+        .attr({
+          x1: function(d) {return x(d.key)+x.rangeBand()/2;},
+          x2: function(d) {return x(d.key)+x.rangeBand()/2;},
+          y1: function(d) {return y(d.values[q]);},
+          y2: function(d) {return y(d.values[side+"Whisker"]);}
+        });
+  }
+
+  var topWhiskers = whiskerLines("q1", "bottom").style("stroke", "black");
+  var bottomWhiskers = whiskerLines("q3", "top").style("stroke", "black");
+
   //Select Outliers
-  //
-  var outliers = byHand.map(function(hand, index){
-    hand.values = hand.values.filter(function(d){
-      return d[v_name] >= summaries[index].values.topWhisker ||
-             d[v_name] <= summaries[index].values.bottomWhisker;
-    });
-    return hand;
+
+  var mapping = {};
+  // mapping connects the handedness to the index of the summaries array
+  summaries.forEach(function(hand, index){
+    mapping[hand.key] = index;
   });
 
+  var outliers = data.filter(function(player){
+      return player[v_name] > summaries[mapping[player.handedness]].values.topWhisker ||
+             player[v_name] < summaries[mapping[player.handedness]].values.bottomWhisker;
+    });
 
 
+
+//Draw outliers
+var circles = chart.selectAll("circle.outlier")
+    .data(outliers)
+  .enter().append("circle")
+    .attr("class", "outlier")
+    .attr({
+      cx: function(d) {return x(d.handedness)+x.rangeBand()/2;},
+      cy: function(d) {return y(d[v_name]);},
+      r: 2
+    });
 
 
 }
