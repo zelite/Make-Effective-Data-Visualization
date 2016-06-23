@@ -3,7 +3,7 @@ function draw_box_plot(data, v_name){
     return a[v_name] - b[v_name];
   });
 
-  var chart = d3.select("body").append("svg")
+  var chart = d3.select("#"+v_name+"-boxplot").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height+margin.top+margin.bottom)
         .attr("class", "boxplot "+v_name)
