@@ -9,9 +9,25 @@
 </head>
 <body>
   <h1>Baseball data visualization</h1>
+  <div id="hand-barplot" class="story-text">
+    <h2>Handedness of Baseball Players</h2>
+    <p>Around 10% of the world population is left-handed [1], however we
+    see a much higher proportion of left-handed inviduals playing baseball.
+    From a sample of 891 baseball players, we see that around 60% are right handed,
+    almost 30% are left handed and 10% are ambidextrous. Do left-handed
+    players perform better at this sport?</p>
+  </div>
+  <div id="avg-boxplot" class="story-text">
+    <h2>Batting Average by Handedness</h2>
 
+  </div>
+  <div id="HR-boxplot" class="story-text">
+    <h2>Home Runs by Handedness</h2>
+  </div>
+  <div id="why-better" class="story-text">
+    <h2>What's in the Handedness?</h2>
+  </div>
   <script src="js/create_barplot.js"></script>
-  <script src="js/box.js"></script>
   <script src="js/create_boxplot.js"></script>
   <script>
   d3.csv("data/baseball_data_subset.csv", function(d){
@@ -25,6 +41,7 @@
       "HR": +d.HR
     };
   },function(data){
+    console.log(data.length);
     draw_bar_plot(data);
     draw_box_plot(data, "avg");
     draw_box_plot(data, "HR");
