@@ -7,7 +7,7 @@ var width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
     // Main svg
-    var chart = d3.select("body").append("svg")
+    var chart = d3.select("#hand-barplot").append("svg")
           .attr("width", width + margin.left + margin.right)
           .attr("height", height+margin.top+margin.bottom)
           .attr("class", "barplot")
@@ -50,8 +50,9 @@ function draw_bar_plot(data){
       return new_labels[value];
     });
 
-  var count_axis = d3.svg.axis()
-    .scale(y)
+  //the vertical axis starts in percentage
+  var vertical_axis = d3.svg.axis()
+    .scale(y_pct)
     .orient("left");
 
   chart.append("g")
@@ -60,10 +61,10 @@ function draw_bar_plot(data){
     .call(hand_axis);
 
   chart.append("g")
-    .attr("class", "count axis")
+    .attr("class", "vertical axis")
     //need to have extra horizontal
     //space to make room for the y axis labels
-    .call(count_axis);
+    .call(vertical_axis);
 
   //specifying bars - used https://bost.ocks.org/mike/bar/3/ as reference
 
@@ -74,14 +75,17 @@ function draw_bar_plot(data){
         .attr("class", "bar")
         .attr("x", function(d){return x(d.key);})
         .attr("width", x.rangeBand())
-        .attr("y", function(d) { return y(d.values.count); })
-        .attr("height", function(d) { return height - y(d.values.count); });
+        .attr("y", function(d) { return y_pct(d.values.percentage); })
+        .attr("height", function(d) { return height - y_pct(d.values.percentage); });
+
+
+
 
   //Button to change count/percentage
-  var button_pct = d3.select("body")
+  var button_pct = d3.select("#hand-barplot")
                 .append("button")
                 .attr("type", "button")
-                .text("Switch to Percentage")
+                .text("Show Count")
                 .style("display", "block");
 
   function change_bars(what_to_show){
@@ -105,17 +109,55 @@ function draw_bar_plot(data){
       .attr("y", function(d) { return new_scale(d.values[what_to_show]); })
       .attr("height", function(d) { return height - new_scale(d.values[what_to_show]); });
     //Update scales
-    d3.select(".count.axis")
+    d3.select(".vertical.axis")
       .transition(transition_time)
-      .call(count_axis.scale(new_scale));
+      .call(vertical_axis.scale(new_scale));
     //Update button labels
     button_pct
-      .text("Switch to "+new_text);
+      .text("Show "+new_text);
+
   }
+
+  //Tooltips: http://bl.ocks.org/mbostock/1087001
+  var tooltip = d3.select("#hand-barplot").append("div")
+      .attr("class", "tooltip")
+      .style("position", "absolute")//TODO: move to CSS
+      .style("pointer-events", "none")//TODO: move to CSS
+      .style("display", "none");
+
+  function mouseover(d){
+    d3.select(this)
+      .transition(500)
+      .attr("fill", "red");
+    tooltip
+      .html("Count: "+d.values.count+
+            " players.<br>Percentage: "+
+            d.values.percentage.toFixed(1)+" %")
+      .style("display", "inline");
+    }
+
+  function mouseout(d){
+    d3.select(this)
+      .transition(500)
+      .attr("fill", "black");
+    tooltip
+      .style("display", "none");
+  }
+
+  function mousemove(d){
+    tooltip
+      .style("left", (d3.event.pageX + 20) + "px")
+      .style("top", (d3.event.pageY - 40) + "px");
+  }
+  //Bar hover effect
+  chart.selectAll(".bar")
+    .on("mouseover", mouseover)
+    .on("mouseout", mouseout)
+    .on("mousemove", mousemove);
 
 //Button to switch between percentage and counts
 button_pct.on("click", function(){
-  if(button_pct.text() == "Switch to Percentage"){
+  if(button_pct.text() == "Show Percentage"){
     change_bars("percentage");
   }else {
     change_bars("count");
