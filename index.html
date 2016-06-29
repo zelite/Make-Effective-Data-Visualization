@@ -4,11 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Visualizing Baseball Data</title>
+  <link href="https://fonts.googleapis.com/css?family=Josefin+Sans:700|Roboto:400,400i" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 </head>
 <body>
-  <h1>Baseball data visualization</h1>
+  <h1>Are lefties better at Baseball?</h1>
   <div id="hand-barplot" class="story-text">
     <h2>Handedness of Baseball Players</h2>
     <p>Around 10% of the world population is left-handed [1], however we
@@ -53,9 +54,9 @@
     population? The short answer: baseball is built for lefties [4].
 
     <blockquote cite="http://www.livescience.com/2665-baseball-rigged-lefties.html">
-      <b>The ballparks:</b> Right field in most parks is shorter than left field
-      because of the preponderance of right-handed hitters.
-      <br>
+<b>The ballparks:</b> Right field in most parks is shorter than left field
+because of the preponderance of right-handed hitters.
+<br>
 
 <b>Seeing the ball:</b> "A right-handed batter facing a right-handed pitcher actually
 has to pick up the ball visually as it comes from behind his (the batter's) left
@@ -71,7 +72,7 @@ one-sixth of a second faster than the righty. That translates to more base hits
 for the left-hander, whether singles or extra base hits because lefties are
 getting to the bases more quickly."
     </blockquote>
-    <p><a href="http://www.livescience.com/2665-baseball-rigged-lefties.html">Learn more...</a></p>
+    <p class="citation-from"><em>from: <a href="http://www.livescience.com/2665-baseball-rigged-lefties.html">http://www.livescience.com/2665-baseball-rigged-lefties.html</a></em></p>
 
   </div>
   <div id="references" class="story-text">
@@ -85,6 +86,7 @@ getting to the bases more quickly."
     </ol>
   </div>
   <script src="js/create_barplot.js"></script>
+  <script src="js/d3-tip.js"></script>
   <script src="js/create_boxplot.js"></script>
   <script>
   d3.csv("data/baseball_data_subset.csv", function(d){
@@ -98,10 +100,10 @@ getting to the bases more quickly."
       "HR": +d.HR
     };
   },function(data){
-    console.log(data.length);
     draw_bar_plot(data);
     draw_box_plot(data, "avg");
     draw_box_plot(data, "HR");
+
   });
   </script>
 </body>
