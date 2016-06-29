@@ -54,26 +54,29 @@ function draw_box_plot(data, v_name){
       })
     .entries(data);
 
+
+
   var x = d3.scale.ordinal()
-          .domain(["R", "L", "B"])
-          .rangeBands([0, width], 0.1);
+          .domain(["L", "B", "R"])
+          .rangeBands([0, width], 0.3);
 
   var y = d3.scale.linear()
             .domain([0, d3.max(summaries, function(d) {return d.values.max;})])
             .range([height, 0]);
 
   //Add axis
+
+  var hand_labels = {"R": "Right-handed Players",
+                "L": "Left-handed Players",
+                "B": "Ambidextrous Players"};
   var hand_axis = d3.svg.axis()
     .scale(x)
     .orient("bottom")
     .tickFormat(function(value){//replace RLB with longer labels
-      new_labels = {"R": "Right-handed Players",
-                    "L": "Left-handed Players",
-                    "B": "Ambidextrous Players"};
-      return new_labels[value];
+      return hand_labels[value];
     });
 
-  var count_axis = d3.svg.axis()
+  var vertical_axis = d3.svg.axis()
     .scale(y)
     .orient("left");
 
@@ -82,9 +85,19 @@ function draw_box_plot(data, v_name){
     .attr("transform", "translate(0,"+ height+")")
     .call(hand_axis);
 
+  var vertLabels = {"avg": "Batting Average", "HR": "Home runs"};
   chart.append("g")
-    .attr("class", "count axis")
-    .call(count_axis);
+      .attr("class", "vertical axis")
+      .call(vertical_axis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", "0.71em")
+      .attr("class", "vertical label")
+      .style("text-anchor", "end")
+      .text(vertLabels[v_name]);
+
+
 
   //draw boxes  - very similar
   //to boxplot, just the y and height are different.
@@ -96,9 +109,27 @@ function draw_box_plot(data, v_name){
       .attr("x", function(d){return x(d.key);})
       .attr("width", x.rangeBand())
       .attr("y", function(d){return y(d.values.q3);})
-      .attr("height", function(d){return y(d.values.q1)-y(d.values.q3);});
+      .attr("height", function(d){return Math.abs(y(d.values.q3)-y(d.values.q1));})
 
-  //draw median line
+
+
+  function update_box(newScale){
+    chart.selectAll(".box")
+    .transition()
+    .attr("y", function(d){return newScale(d.values.q3);})
+    .attr("height", function(d){return newScale(d.values.q1)-newScale(d.values.q3);});
+  }
+
+  //median tooltip
+  var median_tip = d3.tip()
+            .attr("class", "d3-tip")
+            .html(function(d){
+              return "<b>"+hand_labels[d.key]+" median:</b> "+d.values.median;
+            })
+            .direction("n");
+
+  chart.call(median_tip);
+
   var medianLine = chart.selectAll(".median")
       .data(summaries)
     .enter().append("line")
@@ -107,13 +138,26 @@ function draw_box_plot(data, v_name){
       .attr("x2", function(d){return x(d.key)+x.rangeBand();})
       .attr("y1", function(d){return y(d.values.median);})
       .attr("y2", function(d){return y(d.values.median);})
-      .style("stroke", "red");
+      .on("mouseover", median_tip.show)
+      .on("mouseout", median_tip.hide);
 
+  //Put the mouseouver effect also on the surrounding boxes
+  //for easier targetting with the mouse
 
+  chart.selectAll("rect.box")
+    .on("mouseover", median_tip.show)
+    .on("mouseout", median_tip.hide);
+
+  function update_median(newScale){
+    chart.selectAll(".median")
+      .transition()
+      .attr("y1", function(d){return newScale(d.values.median);})
+      .attr("y2", function(d){return newScale(d.values.median);});
+  }
 
   //Draw Whiskers
 
-  function whiskerLines(q, side){
+  function whiskerLines(q, side, vScale){
     return chart.selectAll("."+side+".whisker")
         .data(summaries)
       .enter().append("line")
@@ -121,14 +165,27 @@ function draw_box_plot(data, v_name){
         .attr({
           x1: function(d) {return x(d.key)+x.rangeBand()/2;},
           x2: function(d) {return x(d.key)+x.rangeBand()/2;},
-          y1: function(d) {return y(d.values[q]);},
-          y2: function(d) {return y(d.values[side+"Whisker"]);}
+          y1: function(d) {return vScale(d.values[q]);},
+          y2: function(d) {return vScale(d.values[side+"Whisker"]);}
         });
   }
 
-  var topWhiskers = whiskerLines("q1", "bottom").style("stroke", "black");
-  var bottomWhiskers = whiskerLines("q3", "top").style("stroke", "black");
+  var topWhiskers = whiskerLines("q1", "bottom", y).style("stroke", "black");
+  var bottomWhiskers = whiskerLines("q3", "top", y).style("stroke", "black");
 
+function update_whiskers(newScale){
+    var mapper = {"bottom": "q1",
+                  "top": "q3"};
+    chart.selectAll(".whisker")
+    .transition()
+    .attr({
+      //get "top"/"bottom" from DOM object: this.classList[0]
+      //convert to q1 or q3 with mapper
+      y1: function(d) {return newScale(d.values[mapper[this.classList[0]]]);},
+      y2: function(d) {return newScale(d.values[this.classList[0]+"Whisker"]);}
+    });
+
+  }
   //Select Outliers
 
   var mapping = {};
@@ -144,16 +201,116 @@ function draw_box_plot(data, v_name){
 
 
 
-//Draw outliers
-var circles = chart.selectAll("circle.outlier")
-    .data(outliers)
-  .enter().append("circle")
-    .attr("class", "outlier")
-    .attr({
-      cx: function(d) {return x(d.handedness)+x.rangeBand()/2;},
-      cy: function(d) {return y(d[v_name]);},
-      r: 2
-    });
+//Outlier tooltip
+//On this plot I'll use the d3-tip library: https://github.com/caged/d3-tip
+  function formatData(d){
+    html_text = "<b>Name: </b> #name</br>"+
+                "<b>Batting Average: </b> #avg</br>"+
+                "<b>Home runs: </b> #HR</br>";
 
+    html_text = html_text.replace(/#(\w+)/g, function(match, p1){
+      return d[p1];
+    });
+    return html_text;
+  }
+
+  var circles_tip = d3.tip()
+        .attr("class", "d3-tip")
+        .html(formatData)
+        .direction("ne");
+        //position of tooltip is northeast of target element
+  chart.call(circles_tip);
+//Draw outliers
+update_outliers(outliers, y);
+
+//Update Outliers
+  function update_outliers(outliers, newScale){
+    //outliers need to be remove from the
+    //plot if they are outside the axis range, and
+    //need to be reinserted if the range includes them again.
+    //debugger;
+
+    //First select data that will be kept
+    var circles = chart.selectAll("circle.outlier")
+                  .data(outliers
+                        .filter(function(d) {
+                          return d[v_name] >= newScale.domain()[0] &&
+                          d[v_name] <= newScale.domain()[1];
+                      }), function(d) {return d.name;});
+
+
+    //if new circles are entering then
+    //the x position and radius are set
+    circles
+      .enter()
+      .append("circle")
+      .attr("class", "outlier")
+      .attr({
+          cx: function(d) {return x(d.handedness)+x.rangeBand()/2;},
+          r: 5
+        })
+      .on("mouseover", circles_tip.show)
+      .on("mouseout", circles_tip.hide);
+
+    //all circles get new cy value.
+    circles.transition().attr("cy", function(d) {return newScale(d[v_name]);});
+
+    //circles out of range are removed
+    circles.exit().remove();
+  }
+
+
+  var zoomtButtons = d3.select("#"+v_name+"-boxplot").append("div")
+                          .attr("class", "buttons "+v_name)
+                          .attr("display", "block");
+
+  //Buttons to zoom in and out of the boxes
+  var button_zoomIn = d3.select(".buttons."+v_name).append("button")
+    .attr("name", "in")
+    .attr("type", "button")
+    .text("Zoom on Boxes");
+
+  var button_zoomOut = d3.select(".buttons."+v_name).append("button")
+    .attr("name", "out")
+    .attr("class", "out")
+    .attr("type", "button")
+    .property("disabled", true)
+    .text("Zoom out");
+
+  //zoomed scale from max/min whiskers
+    var y_zoom = d3.scale.linear()
+            .domain([d3.min(summaries, function(d) {return d.values.bottomWhisker;}),
+                     d3.max(summaries, function(d) {return d.values.topWhisker;})])
+            .range([height, 0]);
+
+ //Updating everything for the new zoom
+  function update_axis(newScale){
+    chart.select(".vertical.axis").
+      transition()
+      .call(vertical_axis.scale(newScale));
+  }
+
+  function updateScale(){
+    var newScale;
+    if(this.name === "in"){
+      newScale = y_zoom;
+      button_zoomIn.property("disabled", true);
+      button_zoomOut.property("disabled", false);
+    }else{
+      newScale = y;
+      button_zoomOut.property("disabled", true);
+      button_zoomIn.property("disabled", false);
+    }
+    //Update boxes
+    update_box(newScale);
+    update_median(newScale);
+    update_whiskers(newScale);
+    update_axis(newScale);
+    update_outliers(outliers, newScale);
+
+  }
+
+  button_zoomIn.on("click", updateScale);
+  button_zoomOut.on("click", updateScale);
 
 }
