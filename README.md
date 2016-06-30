@@ -43,14 +43,22 @@ might give visual clues to reader that left handers are better performers.﻿
 
 Feedback E:
 >Overall I find your visualization to be very understandable.  I agree with
-lekhraj that boxplots might not be the best chart type to use, as they aren't
+[Feedback D] that boxplots might not be the best chart type to use, as they aren't
 very understandable for the general public.  If you do decide to use them, I
 would suggest cutting down on stat lingo and focus on the conclusion. Also, for
 the boxplots it would be nice to be able to hover over and see the means.  You
-could use the scatterplot like lakhraj suggested, or bar charts with ranges like
+could use the scatterplot like [Feedback D] suggested, or bar charts with ranges like
 this:
 https://plot.ly/~annabri128/12/results-error-bars-represent-interquartile-range.png
 Hope that was helpful.
+
+Feedback F:
+>Very nice and clear!  Your data backs up your writing and makes it an easy read.
+It would be nice to know whether the players are professional or novice.  My
+guess would be professional because I don't think novice keep stats. Having a
+label on the y axis might be nice for reusing the plots.
+
+### Second version
 
 
 ## Resources
