@@ -1,7 +1,7 @@
 //D3 code for baseball Visualization
 
 // Defining margins as in  http://bl.ocks.org/mbostock/3019563
-var margin = {top: 20, right: 10, bottom:20, left:100};
+var margin = {top: 20, right: 10, bottom:25, left:100};
 
 var width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;

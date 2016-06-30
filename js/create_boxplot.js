@@ -1,3 +1,9 @@
+// Defining margins as in  http://bl.ocks.org/mbostock/3019563
+var margin = {top: 20, right: 10, bottom:25, left:100};
+
+var width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
 function draw_box_plot(data, v_name){
   data = data.sort(function(a, b){
     return a[v_name] - b[v_name];
