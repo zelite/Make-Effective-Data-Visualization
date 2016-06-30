@@ -4,11 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Visualizing Baseball Data</title>
+  <link href="https://fonts.googleapis.com/css?family=Josefin+Sans:700|Roboto:400,400i" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 </head>
 <body>
-  <h1>Baseball data visualization</h1>
+  <h1>Are lefties better at Baseball?</h1>
   <div id="hand-barplot" class="story-text">
     <h2>Handedness of Baseball Players</h2>
     <p>Around 10% of the world population is left-handed [1], however we
@@ -19,14 +20,12 @@
   </div>
   <div id="avg-boxplot" class="story-text">
     <h2>Batting Average by Handedness</h2>
-    <p>The batting average is baseball statistic which is defined by the number
-      of hits divided by at bats. [2] We can see that the median batting average
+    <p>The batting average is a baseball statistic which is defined by the number
+      of hits divided by at bats [2]. The median batting average
       of left-handed players is higher than right-handed and ambidextrous players.
       <br>
-      We can also observe that the box for the left-handed players is smaller
-      (smaller interquartile range) which means the left-handed players have
-      less variability in their batting average. However, the two highest performers
-      are left-handed.
+      Left-handed players have less variability in their batting average. However,
+      the two highest performers are left-handed.
     </p>
 
   </div>
@@ -38,12 +37,8 @@
       is when the batter is able to circle all the bases without being  put out by
       the fielders of the opposite team. [3]
       <br>
-      Once again we can see that left-handed players have a median number of home runs
-      higher than the other players. We can see that in all classes of players
-      the 3rd Quartile of all player classes is always more far away from the median
-      than the 1st Quartile. This shows that the distrution of number of home runs
-      is positively skewed. This comes from the natural minimum of zero home runs
-      on the lower end of the distribution, which is where the majority of players lie.
+      Left-handed players have a median number of home runs
+      higher than the other players.
     </p>
   </div>
   <div id="why-better" class="story-text">
@@ -53,9 +48,9 @@
     population? The short answer: baseball is built for lefties [4].
 
     <blockquote cite="http://www.livescience.com/2665-baseball-rigged-lefties.html">
-      <b>The ballparks:</b> Right field in most parks is shorter than left field
-      because of the preponderance of right-handed hitters.
-      <br>
+<b>The ballparks:</b> Right field in most parks is shorter than left field
+because of the preponderance of right-handed hitters.
+<br>
 
 <b>Seeing the ball:</b> "A right-handed batter facing a right-handed pitcher actually
 has to pick up the ball visually as it comes from behind his (the batter's) left
@@ -71,7 +66,7 @@ one-sixth of a second faster than the righty. That translates to more base hits
 for the left-hander, whether singles or extra base hits because lefties are
 getting to the bases more quickly."
     </blockquote>
-    <p><a href="http://www.livescience.com/2665-baseball-rigged-lefties.html">Learn more...</a></p>
+    <p class="citation-from"><em>from: <a href="http://www.livescience.com/2665-baseball-rigged-lefties.html">http://www.livescience.com/2665-baseball-rigged-lefties.html</a></em></p>
 
   </div>
   <div id="references" class="story-text">
@@ -85,6 +80,7 @@ getting to the bases more quickly."
     </ol>
   </div>
   <script src="js/create_barplot.js"></script>
+  <script src="js/d3-tip.js"></script>
   <script src="js/create_boxplot.js"></script>
   <script>
   d3.csv("data/baseball_data_subset.csv", function(d){
@@ -98,10 +94,10 @@ getting to the bases more quickly."
       "HR": +d.HR
     };
   },function(data){
-    console.log(data.length);
     draw_bar_plot(data);
     draw_box_plot(data, "avg");
     draw_box_plot(data, "HR");
+
   });
   </script>
 </body>

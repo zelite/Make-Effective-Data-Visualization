@@ -1,5 +1,33 @@
+body{
+  font-family: 'Roboto', sans-serif;
+  text-align: justify;
+  width: 60rem;
+  margin: 3rem auto 3rem auto;
+}
+
+h1,h2,h3{
+  font-family: "Josefin Sans", sans-serif;
+}
+
+.story-text{
+  font-size: 1.2rem;
+}
+
 .axis text {
-  font: 10px sans-serif;
+  font: 0.8rem sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+
+blockquote {
+  background: #f9f9f9;
+  border-left: 10px solid #ccc;
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+}
+
+.citation-from{
+  text-align: right;
 }
 
 .axis path,
@@ -9,29 +37,29 @@
   shape-rendering: crispEdges;
 }
 
-body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-
-
-
-.box {
-  font: 10px sans-serif;
-}
-
-.box line,
-.box rect,
-.box circle {
+rect.box {
   fill: #fff;
   stroke: #000;
-  stroke-width: 1.5px;
+  stroke-width: 0.1rem;
 }
 
-.box .center {
-  stroke-dasharray: 3,3;
+line.median{
+  stroke: #3498DB;
+  stroke-width: 0.1rem;
 }
 
-.box .outlier {
-  fill: none;
-  stroke: #ccc;
+circle.outlier {
+  fill: #fff;
+  fill-opacity: 0.5;
+  stroke: #515151;
+}
+
+.tooltip, .d3-tip{
+  background: #fff;
+  border-radius: 0.125rem;
+  padding: 0.5rem;
+  border: solid 0.1rem #000;
+  opacity: 0.9;
+  pointer-events: none;
+
 }
