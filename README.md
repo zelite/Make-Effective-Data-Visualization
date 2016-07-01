@@ -2,7 +2,36 @@
 
 ## Summary
 
+This project visualizes a trimmed down subset of data from the [Lahman’s Baseball Database](http://www.seanlahman.com/baseball-archive/statistics/). The visualization shows the high proportion of baseball players who are left-handed and compares their performance (batting average and number of home run) to the remaining players.
+
 ## Design
+
+### Bar Plot
+The first decision made was to remove players with zero batting average. Since both performance indicators in the dataset have to do with batting, it does not make sense to include players that are not batters.
+
+To compare the proportion of baseball players in each handedness
+category a simple bar plot is used. After the first round of feedback, the order of the categories was changed to
+have the left-handed players bar on the left side and the right-handed
+players bar on the right side. This makes it more intuitive to analyse
+the plot without needing to always look at the category labels.
+
+### Box-Plots
+To compare the batting average and home runs, box-plots are used. The
+reason for this choice is the ability to convey a lot of information
+in one single plot:
+
+  * we can compare medians.
+  * we can compare distributions.
+  * we can visualize outliers.
+
+Some people suggested in the feedback that the use of these plots
+may not be the best since they are not so easy to interpret. That is a
+fair point. But for this visualization I believe the benefits are worth it, and since the purpose of this project is also to learn about D3, it gives me the opportunity to create different kind of plot instead
+of repeating bar plots.
+
+Another person suggested than in the home runs box-plot the vertical axis should only extend until 250. This would allow to better visualize the boxes distribution and not get distracted by the high number of outliers on the upper range. Based on this suggestion, I opted to put a "zoom" button that allows to zoom in on the boxes and in this way we can see both the detail of the boxes and the outliers.
+
+Also based on feedback, tooltips that show the median values appear when hovering the boxes with the mouse pointer. Additionally, the performance and names of the outliers appear when hovering the outlier circles.
 
 ## Feedback
 
@@ -62,3 +91,24 @@ label on the y axis might be nice for reusing the plots.
 
 
 ## Resources
+### Baseball resources:
+
+http://psycnet.apa.org/journals/bul/84/3/385/
+
+https://en.wikipedia.org/wiki/Batting_average#Major_League_Baseball
+
+https://en.wikipedia.org/wiki/Home_run#Inside-the-park_home_run
+
+http://www.livescience.com/2665-baseball-rigged-lefties.html
+
+### D3 Bar plots
+
+http://bl.ocks.org/mbostock/3019563
+
+https://bost.ocks.org/mike/bar/3/
+
+### D3 tooltips
+
+http://bl.ocks.org/mbostock/1087001
+
+https://github.com/caged/d3-tip
