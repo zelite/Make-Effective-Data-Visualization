@@ -115,7 +115,7 @@ function draw_box_plot(data, v_name){
       .attr("x", function(d){return x(d.key);})
       .attr("width", x.rangeBand())
       .attr("y", function(d){return y(d.values.q3);})
-      .attr("height", function(d){return Math.abs(y(d.values.q3)-y(d.values.q1));})
+      .attr("height", function(d){return Math.abs(y(d.values.q3)-y(d.values.q1));});
 
 
 
