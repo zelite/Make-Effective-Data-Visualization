@@ -2,7 +2,7 @@
 
 ## Summary
 
-This project visualizes a trimmed down subset of data from the [Lahman’s Baseball Database](http://www.seanlahman.com/baseball-archive/statistics/). The visualization shows the high proportion of baseball players who are left-handed and compares their performance (batting average and number of home run) to the remaining players.
+This project visualizes a trimmed down subset of data from the [Lahman’s Baseball Database](http://www.seanlahman.com/baseball-archive/statistics/). The visualization shows the high proportion of baseball players who are left-handed and compares their performance (batting average and number of home run) to the remaining players. You can [see the visualization here.](http://zelite.github.io/Make-Effective-Data-Visualization/)
 
 ## Design
 
