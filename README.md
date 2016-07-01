@@ -6,16 +6,15 @@ This project visualizes a trimmed down subset of data from the [Lahman’s Baseb
 
 ## Design
 
-### Bar Plot
 The first decision made was to remove players with zero batting average. Since both performance indicators in the dataset have to do with batting, it does not make sense to include players that are not batters.
 
+### Bar Plot
+
 To compare the proportion of baseball players in each handedness
-category a simple bar plot is used. After the first round of feedback, the order of the categories was changed to
-have the left-handed players bar on the left side and the right-handed
-players bar on the right side. This makes it more intuitive to analyse
-the plot without needing to always look at the category labels.
+category a simple bar plot is used.
 
 ### Box-Plots
+
 To compare the batting average and home runs, box-plots are used. The
 reason for this choice is the ability to convey a lot of information
 in one single plot:
@@ -23,15 +22,6 @@ in one single plot:
   * we can compare medians.
   * we can compare distributions.
   * we can visualize outliers.
-
-Some people suggested in the feedback that the use of these plots
-may not be the best since they are not so easy to interpret. That is a
-fair point. But for this visualization I believe the benefits are worth it, and since the purpose of this project is also to learn about D3, it gives me the opportunity to create different kind of plot instead
-of repeating bar plots.
-
-Another person suggested than in the home runs box-plot the vertical axis should only extend until 250. This would allow to better visualize the boxes distribution and not get distracted by the high number of outliers on the upper range. Based on this suggestion, I opted to put a "zoom" button that allows to zoom in on the boxes and in this way we can see both the detail of the boxes and the outliers.
-
-Also based on feedback, tooltips that show the median values appear when hovering the boxes with the mouse pointer. Additionally, the performance and names of the outliers appear when hovering the outlier circles.
 
 ## Feedback
 
@@ -87,10 +77,38 @@ It would be nice to know whether the players are professional or novice.  My
 guess would be professional because I don't think novice keep stats. Having a
 label on the y axis might be nice for reusing the plots.
 
+After the first round of feedback, the order of the categories was changed to
+have the left-handed players bar on the left side and the right-handed
+players bar on the right side [Feedback B]. This makes it more intuitive to analyse
+the plot without needing to always look at the category labels.
+
+Some people suggested in the feedback that the use of these plots
+may not be the best since they are not so easy to interpret [Feedback D and Feedback E]. That is a
+fair point. But for this visualization I believe the benefits are worth it, and since the purpose of this project is also to learn about D3, it gives me the opportunity to create different kind of plot instead
+of repeating bar plots.
+
+Another person suggested [Feedback C] than in the home runs box-plot the vertical axis should only extend until 250. This would allow to better visualize the boxes distribution and not get distracted by the high number of outliers on the upper range. Based on this suggestion, I opted to put a "zoom" button that allows to zoom in on the boxes and in this way we can see both the detail of the boxes and the outliers.
+
+Also based on feedback, tooltips that show the median values appear when hovering the boxes with the mouse pointer. Additionally, the performance and names of the outliers appear when hovering the outlier circles.
+
 ### Second version
 
-_by 01.07.2016 10:29:00 CEST no feedback had been given for the second version_
+Reviewer Feedback:
 
+> The outliers in the boxplots give the impression that those values are important (perhaps even more important than the median for those not familiar with boxplots) and it sort of detracts from the main point. If you decide to keep the boxplots (reasons on why you might not want to below), I would get rid of the outlier circles and draw more attention to the median by making the line bolder or by including a large circle for the average that really stands out. Often people will just scan your graphic and if the main point is not easily digested, then they may not absorb it, or even worse start to question it.
+>The other thing is the placement of the buttons for zooming in and out. It feels a little odd to have them at the bottom left corner, and clicking and then looking at the graphic feels unnatural. I think it would be best to have the buttons in the top right corner stacked vertically (almost like a legend). This will also reduce the amount of text that you have near the axis labels and clean up that area.
+> Suggestion
+> I think there is some validity to the critiques about the boxplots being a little too statistically minded. I say this mainly because the boxplots draw attention to the distribution of the values when your focus seems to be the median or average. With the whiskers and outliers of the boxplot, the eye kind of wanders over there and then a viewer (especially a viewer not familiar with statistics) may start to wonder if the outlier circles or min/max whiskers are important. For this reason it may be better to use an average or median only, and allow the viewer to see the distribution with a button (like you have for the zoom).
+
+> Suggestion
+
+> The button helps to zoom in better and see the medians but I think that the viewer shouldn't have to zoom in to see the trend. If you keep the boxplots, it would be better to have plots already zoomed so that the trend is easy to identify.
+
+Based on the feedback the following changes were done:
+ * Make the boxplots start in a zoomed in status.
+ * Make the boxes and outliers less visible (color change).
+ * Change position of the interaction buttons.
+ 
 ## Resources
 ### Baseball resources:
 
