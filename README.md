@@ -89,6 +89,7 @@ label on the y axis might be nice for reusing the plots.
 
 ### Second version
 
+_by 01.07.2016 10:29:00 CEST no feedback had been given for the second version_
 
 ## Resources
 ### Baseball resources:
