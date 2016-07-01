@@ -17,11 +17,7 @@ function draw_bar_plot(data){
   var HOVERBARATTR = {fill: "#E9AD85",
                       stroke: "#DB7734"};
   // Main svg
-<<<<<<< HEAD
-  var chart = d3.select("#hand-barplot").append("svg")
-=======
   var chart = d3.select("#hand-barplot>.plot-container").append("svg")
->>>>>>> master
         .attr("width", width + margin.left + margin.right)
         .attr("height", height+margin.top+margin.bottom)
         .attr("class", "barplot")

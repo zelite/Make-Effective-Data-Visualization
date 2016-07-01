@@ -1,11 +1,7 @@
 body{
   font-family: 'Roboto', sans-serif;
   text-align: justify;
-<<<<<<< HEAD
-  width: 60rem;
-=======
   width: 65rem;
->>>>>>> master
   margin: 3rem auto 3rem auto;
 }
 
@@ -17,8 +13,6 @@ h1,h2,h3{
   font-size: 1.2rem;
 }
 
-<<<<<<< HEAD
-=======
 .plot-container{
   position: relative;
 }
@@ -38,16 +32,11 @@ h1,h2,h3{
 }
 
 
->>>>>>> master
 .axis text {
   font: 0.8rem sans-serif;
   text-rendering: optimizeLegibility;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> master
 blockquote {
   background: #f9f9f9;
   border-left: 10px solid #ccc;
@@ -66,36 +55,21 @@ blockquote {
   shape-rendering: crispEdges;
 }
 
-<<<<<<< HEAD
-rect.box {
-  fill: #fff;
-  stroke: #000;
-  stroke-width: 0.1rem;
-=======
 rect.box,
 line.whisker {
   fill: #fff;
   stroke: #969696;
->>>>>>> master
 }
 
 line.median{
   stroke: #3498DB;
-<<<<<<< HEAD
-  stroke-width: 0.1rem;
-=======
   stroke-width: 0.3rem;
->>>>>>> master
 }
 
 circle.outlier {
   fill: #fff;
   fill-opacity: 0.5;
-<<<<<<< HEAD
-  stroke: #515151;
-=======
   stroke: #ccc;;
->>>>>>> master
 }
 
 .tooltip, .d3-tip{

@@ -77,11 +77,6 @@ It would be nice to know whether the players are professional or novice.  My
 guess would be professional because I don't think novice keep stats. Having a
 label on the y axis might be nice for reusing the plots.
 
-<<<<<<< HEAD
-### Second version
-
-
-=======
 After the first round of feedback, the order of the categories was changed to
 have the left-handed players bar on the left side and the right-handed
 players bar on the right side [Feedback B]. This makes it more intuitive to analyse
@@ -114,7 +109,6 @@ Based on the feedback the following changes were done:
  * Make the boxes and outliers less visible (color change).
  * Change position of the interaction buttons.
  
->>>>>>> master
 ## Resources
 ### Baseball resources:
 
