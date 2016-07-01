@@ -9,7 +9,7 @@ function draw_box_plot(data, v_name){
     return a[v_name] - b[v_name];
   });
 
-  var chart = d3.select("#"+v_name+"-boxplot").append("svg")
+  var chart = d3.select("#"+v_name+"-boxplot>.plot-container").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height+margin.top+margin.bottom)
         .attr("class", "boxplot "+v_name)
@@ -67,8 +67,9 @@ function draw_box_plot(data, v_name){
           .rangeBands([0, width], 0.3);
 
   var y = d3.scale.linear()
-            .domain([0, d3.max(summaries, function(d) {return d.values.max;})])
-            .range([height, 0]);
+          .domain([d3.min(summaries, function(d) {return d.values.bottomWhisker;}),
+                   d3.max(summaries, function(d) {return d.values.topWhisker;})])
+          .range([height, 0]);
 
   //Add axis
 
@@ -115,7 +116,11 @@ function draw_box_plot(data, v_name){
       .attr("x", function(d){return x(d.key);})
       .attr("width", x.rangeBand())
       .attr("y", function(d){return y(d.values.q3);})
+<<<<<<< HEAD
       .attr("height", function(d){return Math.abs(y(d.values.q3)-y(d.values.q1));})
+=======
+      .attr("height", function(d){return Math.abs(y(d.values.q3)-y(d.values.q1));});
+>>>>>>> master
 
 
 
@@ -145,6 +150,7 @@ function draw_box_plot(data, v_name){
       .attr("y1", function(d){return y(d.values.median);})
       .attr("y2", function(d){return y(d.values.median);})
       .on("mouseover", median_tip.show)
+<<<<<<< HEAD
       .on("mouseout", median_tip.hide);
 
   //Put the mouseouver effect also on the surrounding boxes
@@ -154,6 +160,18 @@ function draw_box_plot(data, v_name){
     .on("mouseover", median_tip.show)
     .on("mouseout", median_tip.hide);
 
+=======
+      .on("mouseout", median_tip.hide)
+      .on("mouseout", console.log("test"));
+
+  //Put the mouseouver effect also on the surrounding boxes
+  //for easier targetting with the mouse
+
+  chart.selectAll("rect.box")
+    .on("mouseover", median_tip.show)
+    .on("mouseout", median_tip.hide);
+
+>>>>>>> master
   function update_median(newScale){
     chart.selectAll(".median")
       .transition()
@@ -176,6 +194,7 @@ function draw_box_plot(data, v_name){
         });
   }
 
+<<<<<<< HEAD
   var topWhiskers = whiskerLines("q1", "bottom", y).style("stroke", "black");
   var bottomWhiskers = whiskerLines("q3", "top", y).style("stroke", "black");
 
@@ -191,6 +210,23 @@ function update_whiskers(newScale){
       y2: function(d) {return newScale(d.values[this.classList[0]+"Whisker"]);}
     });
 
+=======
+  var topWhiskers = whiskerLines("q1", "bottom", y);
+  var bottomWhiskers = whiskerLines("q3", "top", y);
+
+function update_whiskers(newScale){
+    var mapper = {"bottom": "q1",
+                  "top": "q3"};
+    chart.selectAll(".whisker")
+    .transition()
+    .attr({
+      //get "top"/"bottom" from DOM object: this.classList[0]
+      //convert to q1 or q3 with mapper
+      y1: function(d) {return newScale(d.values[mapper[this.classList[0]]]);},
+      y2: function(d) {return newScale(d.values[this.classList[0]+"Whisker"]);}
+    });
+
+>>>>>>> master
   }
   //Select Outliers
 
@@ -266,20 +302,30 @@ update_outliers(outliers, y);
   }
 
 
+<<<<<<< HEAD
   var zoomtButtons = d3.select("#"+v_name+"-boxplot").append("div")
                           .attr("class", "buttons "+v_name)
                           .attr("display", "block");
+=======
+  var zoomtButtons = d3.select("#"+v_name+"-boxplot>.plot-container").append("div")
+                          .attr("class", "buttons "+v_name);
+>>>>>>> master
 
   //Buttons to zoom in and out of the boxes
   var button_zoomIn = d3.select(".buttons."+v_name).append("button")
     .attr("name", "in")
     .attr("type", "button")
+<<<<<<< HEAD
+=======
+    .property("disabled", true)
+>>>>>>> master
     .text("Zoom on Boxes");
 
   var button_zoomOut = d3.select(".buttons."+v_name).append("button")
     .attr("name", "out")
     .attr("class", "out")
     .attr("type", "button")
+<<<<<<< HEAD
     .property("disabled", true)
     .text("Zoom out");
 
@@ -288,6 +334,14 @@ update_outliers(outliers, y);
             .domain([d3.min(summaries, function(d) {return d.values.bottomWhisker;}),
                      d3.max(summaries, function(d) {return d.values.topWhisker;})])
             .range([height, 0]);
+=======
+    .text("Zoom out");
+
+  //zoomed out scale for full range of outliers
+    var y_zoom = d3.scale.linear()
+      .domain([0, d3.max(summaries, function(d) {return d.values.max;})])
+      .range([height, 0]);
+>>>>>>> master
 
  //Updating everything for the new zoom
   function update_axis(newScale){
@@ -299,11 +353,19 @@ update_outliers(outliers, y);
   function updateScale(){
     var newScale;
     if(this.name === "in"){
+<<<<<<< HEAD
       newScale = y_zoom;
       button_zoomIn.property("disabled", true);
       button_zoomOut.property("disabled", false);
     }else{
       newScale = y;
+=======
+      newScale = y;
+      button_zoomIn.property("disabled", true);
+      button_zoomOut.property("disabled", false);
+    }else{
+      newScale = y_zoom;
+>>>>>>> master
       button_zoomOut.property("disabled", true);
       button_zoomIn.property("disabled", false);
     }
