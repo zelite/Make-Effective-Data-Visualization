@@ -17,7 +17,7 @@ function draw_bar_plot(data){
   var HOVERBARATTR = {fill: "#E9AD85",
                       stroke: "#DB7734"};
   // Main svg
-  var chart = d3.select("#hand-barplot").append("svg")
+  var chart = d3.select("#hand-barplot>.plot-container").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height+margin.top+margin.bottom)
         .attr("class", "barplot")
@@ -93,7 +93,9 @@ function draw_bar_plot(data){
         .attr(BARATTR);
 
   //Button to change count/percentage
-  var button_pct = d3.select("#hand-barplot")
+  var button_pct = d3.select("#hand-barplot>.plot-container")
+                .append("div")
+                .attr("class", "buttons")
                 .append("button")
                 .attr("type", "button")
                 .text("Show Count")
